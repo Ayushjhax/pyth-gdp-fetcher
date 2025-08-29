@@ -287,6 +287,10 @@ sudo systemctl start sonic-gdp-dashboard
 - Data source availability
 - System resource usage
 
+## **System Design** 
+<img width="1640" height="2360" alt="IMG_0069" src="https://github.com/user-attachments/assets/07716d76-5f61-45e6-ba35-2f26a2494ed6" />
+
+
 ## 🤝 **Contributing**
 
 We welcome contributions from the community! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
