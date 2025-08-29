@@ -102,16 +102,11 @@
 
 ## 🚀 **Quick Start**
 
-### **Prerequisites**
-- Rust 1.70+ ([Install Rust](https://rustup.rs/))
-- Node.js 18+ (for development tools)
-
 ### **Installation**
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/sonic-svm-gdp-dashboard.git
-cd sonic-svm-gdp-dashboard
+git clone https://github.com/Ayushjhax/pyth-gdp-fetcher.git
 
 # Install dependencies
 cargo build --release
@@ -292,31 +287,6 @@ sudo systemctl start sonic-gdp-dashboard
 - Data source availability
 - System resource usage
 
-## 🚀 **Future Roadmap**
-
-### **Phase 1: Enhanced Data Sources**
-- [ ] Additional economic indicators (CPI, Unemployment, etc.)
-- [ ] Real-time market data integration
-- [ ] Historical data analytics
-
-### **Phase 2: Advanced Features**
-- [ ] WebSocket real-time streaming
-- [ ] GraphQL API endpoint
-- [ ] Advanced filtering and querying
-- [ ] Data export capabilities
-
-### **Phase 3: Enterprise Features**
-- [ ] Multi-tenant architecture
-- [ ] Advanced authentication (OAuth, JWT)
-- [ ] Rate limiting and quotas
-- [ ] Analytics dashboard
-
-### **Phase 4: Blockchain Integration**
-- [ ] Smart contract data feeds
-- [ ] DeFi protocol integration
-- [ ] Cross-chain data aggregation
-- [ ] Decentralized governance
-
 ## 🤝 **Contributing**
 
 We welcome contributions from the community! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
@@ -338,23 +308,8 @@ We welcome contributions from the community! Please see our [Contributing Guidel
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 **Acknowledgments**
-
-- **Pyth Network** for providing reliable economic data
-- **Sonic SVM** for blockchain infrastructure
-- **Solana Foundation** for blockchain technology
-- **Rust Community** for the excellent ecosystem
-- **Axum Team** for the web framework
-
-## 📞 **Contact & Support**
-
-- **GitHub Issues:** [Report bugs or request features](https://github.com/yourusername/sonic-svm-gdp-dashboard/issues)
-- **Discord:** [Join our community](https://discord.gg/your-invite)
-- **Email:** [support@yourcompany.com](mailto:support@yourcompany.com)
-- **Documentation:** [Full API docs](https://docs.yourcompany.com)
-
 ---
 
-**Built with ❤️ by the Sonic SVM + Pyth Network Team**
+**Built with ❤️**
 
 *Empowering the future of decentralized economic data infrastructure*
