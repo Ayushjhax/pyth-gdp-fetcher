@@ -290,6 +290,12 @@ sudo systemctl start sonic-gdp-dashboard
 ## **System Design** 
 <img width="1640" height="2360" alt="IMG_0069" src="https://github.com/user-attachments/assets/07716d76-5f61-45e6-ba35-2f26a2494ed6" />
 
+## **Video Demo(In progress)** 
+
+
+https://github.com/user-attachments/assets/4a6afd98-c4ca-41b0-860c-44892eb71d5e
+
+
 
 ## 🤝 **Contributing**
 
