@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sonic SVM GDP Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-shadow { box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
+        .pulse-animation { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    </style>
+</head>
+<body class="bg-gray-50" x-data="gdpDashboard()">
+    <!-- Header -->
+    <div class="gradient-bg text-white py-8">
+        <div class="container mx-auto px-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-4xl font-bold mb-2">Sonic SVM GDP Dashboard</h1>
+                    <p class="text-blue-100">Real-time US Economic Data via Pyth Network</p>
+                </div>
+                <div class="text-right">
+                    <div class="bg-white/20 rounded-lg p-4">
+                        <div class="text-sm text-blue-100">Network Status</div>
+                        <div class="text-xl font-semibold" x-text="networkStatus"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div class="container mx-auto px-6 py-8">
+        <!-- Key Metrics Row -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <!-- Main GDP -->
+            <div class="bg-white rounded-xl card-shadow p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-700">Current GDP</h3>
+                    <i class="fas fa-chart-line text-green-500 text-xl"></i>
+                </div>
+                <div class="text-3xl font-bold text-gray-900" x-text="mainGdp.price + '%'"></div>
+                <div class="text-sm text-gray-500 mt-2">
+                    <span class="text-green-600">±</span><span x-text="mainGdp.confidence + '%'"></span> confidence
+                </div>
+                <div class="text-xs text-gray-400 mt-1" x-text="'Updated: ' + formatTime(mainGdp.last_updated)"></div>
+            </div>
+
+            <!-- Total Feeds -->
+            <div class="bg-white rounded-xl card-shadow p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-700">Total Feeds</h3>
+                    <i class="fas fa-database text-blue-500 text-xl"></i>
+                </div>
+                <div class="text-3xl font-bold text-gray-900" x-text="allFeeds.length"></div>
+                <div class="text-sm text-gray-500 mt-2">Economic Indicators</div>
+            </div>
+
+            <!-- Data Source -->
+            <div class="bg-white rounded-xl card-shadow p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-700">Data Source</h3>
+                    <i class="fas fa-server text-purple-500 text-xl"></i>
+                </div>
+                <div class="text-sm font-medium text-gray-900" x-text="mainGdp.source"></div>
+                <div class="text-xs text-gray-500 mt-2">Via Sonic SVM + Pyth</div>
+            </div>
+
+            <!-- Last Update -->
+            <div class="bg-white rounded-xl card-shadow p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-700">Last Update</h3>
+                    <i class="fas fa-clock text-orange-500 text-xl"></i>
+                </div>
+                <div class="text-sm font-medium text-gray-900" x-text="formatTime(mainGdp.last_updated)"></div>
+                <div class="text-xs text-gray-500 mt-2">Real-time data</div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="bg-white rounded-xl card-shadow p-6 mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">GDP Feed Explorer</h2>
+                    <p class="text-gray-600">Explore all US GDP economic indicators from Pyth Network</p>
+                </div>
+                <div class="flex gap-4">
+                    <button @click="fetchMainGdp()" 
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                        <i class="fas fa-sync-alt mr-2"></i>Refresh Main GDP
+                    </button>
+                    <button @click="fetchAllFeeds()" 
+                            class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                        <i class="fas fa-download mr-2"></i>Fetch All Feeds
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div x-show="loading" class="text-center py-12">
+            <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <p class="mt-4 text-gray-600">Fetching GDP data from Sonic SVM...</p>
+        </div>
+
+        <!-- GDP Feeds Grid -->
+        <div x-show="!loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <template x-for="feed in allFeeds" :key="feed.symbol">
+                <div class="bg-white rounded-xl card-shadow p-6 hover:shadow-lg transition-shadow">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold text-gray-700" x-text="feed.symbol"></h3>
+                        <div class="w-3 h-3 rounded-full bg-green-400 pulse-animation"></div>
+                    </div>
+                    
+                    <div class="text-2xl font-bold text-gray-900 mb-2">
+                        <span x-text="feed.price.toFixed(2)"></span>
+                        <span class="text-sm text-gray-500">%</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="text-gray-500">
+                            ±<span x-text="feed.confidence.toFixed(3)"></span>%
+                        </span>
+                        <span class="text-xs text-gray-400" x-text="formatTime(feed.last_updated)"></span>
+                    </div>
+                    
+                    <div class="mt-4 pt-4 border-t border-gray-100">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-gray-400">Source</span>
+                            <span class="text-blue-600 font-medium" x-text="getSourceBadge(feed.source)"></span>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+
+        <!-- Error State -->
+        <div x-show="error" class="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+            <i class="fas fa-exclamation-triangle text-red-500 text-3xl mb-4"></i>
+            <h3 class="text-lg font-semibold text-red-800 mb-2">Failed to Fetch GDP Data</h3>
+            <p class="text-red-600" x-text="errorMessage"></p>
+            <button @click="fetchAllFeeds()" 
+                    class="mt-4 bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
+                <i class="fas fa-retry mr-2"></i>Try Again
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-16">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Sonic SVM Integration</h4>
+                    <p class="text-gray-300">Real-time GDP data fetched through Sonic SVM's native Pyth Network integration</p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Data Sources</h4>
+                    <ul class="text-gray-300 space-y-2">
+                        <li>• Sonic SVM Pyth Programs</li>
+                        <li>• Solana RPC (Helius)</li>
+                        <li>• Pyth Hermes API</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Technical Details</h4>
+                    <ul class="text-gray-300 space-y-2">
+                        <li>• Built with Rust + Axum</li>
+                        <li>• Real-time economic data</li>
+                        <li>• Production-ready API</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2025 Sonic SVM + Pyth GDP Dashboard. Built for blockchain innovation. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function gdpDashboard() {
+            return {
+                loading: false,
+                error: false,
+                errorMessage: '',
+                networkStatus: '🔍 Checking...',
+                mainGdp: {
+                    symbol: 'ECO.US.GDP',
+                    price: 0,
+                    confidence: 0,
+                    last_updated: new Date().toISOString(),
+                    source: 'Loading...'
+                },
+                allFeeds: [],
+
+                init() {
+                    this.checkNetworkStatus();
+                    this.fetchMainGdp();
+                    this.fetchAllFeeds();
+                    
+                    // Auto-refresh every 30 seconds
+                    setInterval(() => {
+                        this.fetchMainGdp();
+                    }, 30000);
+                },
+
+                async checkNetworkStatus() {
+                    try {
+                        const response = await fetch('/sonic/status');
+                        const data = await response.json();
+                        this.networkStatus = data.data.status;
+                    } catch (e) {
+                        this.networkStatus = 'Offline';
+                    }
+                },
+
+                async fetchMainGdp() {
+                    try {
+                        const response = await fetch('/gdp');
+                        const data = await response.json();
+                        
+                        if (data.success) {
+                            this.mainGdp = data.data;
+                            this.error = false;
+                        } else {
+                            this.error = true;
+                            this.errorMessage = data.error;
+                        }
+                    } catch (e) {
+                        this.error = true;
+                        this.errorMessage = 'Network error: ' + e.message;
+                    }
+                },
+
+                async fetchAllFeeds() {
+                    this.loading = true;
+                    this.error = false;
+                    
+                    try {
+                        const response = await fetch('/gdp/all');
+                        const data = await response.json();
+                        
+                        if (data.success) {
+                            this.allFeeds = data.data;
+                            this.error = false;
+                        } else {
+                            this.error = true;
+                            this.errorMessage = data.error;
+                        }
+                    } catch (e) {
+                        this.error = true;
+                        this.errorMessage = 'Network error: ' + e.message;
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+
+                formatTime(timestamp) {
+                    return new Date(timestamp).toLocaleTimeString();
+                },
+
+                getSourceBadge(source) {
+                    if (source.includes('Sonic SVM')) return 'Sonic';
+                    if (source.includes('Solana')) return 'Solana';
+                    if (source.includes('Hermes')) return 'Hermes';
+                    return 'Unknown';
+                }
+            }
+        }
+    </script>
+</body>
+</html>
