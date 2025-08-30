@@ -19,7 +19,7 @@
 - **Production-ready API** with comprehensive monitoring
 - **Modern web dashboard** with real-time updates
 
-## 🚀 **Live Demo**
+## 🚀 **For Demo local**
 
 **Dashboard:** [http://localhost:3000](http://localhost:3000)  
 **API Documentation:** [http://localhost:3000/docs](http://localhost:3000/docs)
