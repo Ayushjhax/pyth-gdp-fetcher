@@ -12,6 +12,9 @@
 
 **Sonic SVM + Pyth GDP Dashboard** is a production-ready, enterprise-grade platform that delivers real-time US economic data through cutting-edge blockchain technology. Built with Rust for maximum performance and reliability, this system demonstrates the future of decentralized economic data infrastructure.
 
+## **System Design** 
+<img width="1640" height="2360" alt="IMG_0069" src="https://github.com/user-attachments/assets/07716d76-5f61-45e6-ba35-2f26a2494ed6" />
+
 ### 🏆 **Key Achievements**
 - **Real-time GDP data** with sub-second latency
 - **23 economic indicators** including quarterly and annual GDP metrics
@@ -287,8 +290,7 @@ sudo systemctl start sonic-gdp-dashboard
 - Data source availability
 - System resource usage
 
-## **System Design** 
-<img width="1640" height="2360" alt="IMG_0069" src="https://github.com/user-attachments/assets/07716d76-5f61-45e6-ba35-2f26a2494ed6" />
+
 
 ## **Video Demo(In progress)** 
 
